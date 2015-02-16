@@ -1,0 +1,6 @@
+---
+- hosts: gitlab
+  user: fedora
+  sudo: yes
+  roles:
+    - { role: deploy, tags: ['deploy'] }

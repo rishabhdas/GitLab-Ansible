@@ -1,0 +1,28 @@
+- name: Clean yum metadata
+  command: yum clean all
+  always_run: yes
+
+- name: Install dependencies
+  yum: name={{ item }} state=present
+  with_items:
+    - "{{ dependencies }}"
+
+- name: enable services
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - "{{ services }}"
+
+- name: Create directory to download GitLab RPM
+  file: path=/var/tmp/rpms state=directory
+
+- name: Clean the directory of existing RPMs
+  shell: rm -f *.rpm chdir=/var/tmp/rpms
+
+- name: Download GitLab RPM in /var/tmp/rpms
+  get_url: url={{ gitlab_url }} dest=/var/tmp/rpms
+
+- name: Install gitlab RPM
+  shell: yum -y install *.rpm chdir=/var/tmp/rpms
+
+- name: Configure GitLab
+  shell: gitlab-ctl reconfigure
