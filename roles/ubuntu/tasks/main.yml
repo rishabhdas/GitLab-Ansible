@@ -1,0 +1,28 @@
+---
+- name: Update Cache
+  apt: update_cache=yes
+
+- name: Install dependencies
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ dependencies }}"
+
+- name: Enable required services
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - "{{ services }}"
+
+- name: Create directory to download GitLab Deb
+  file: path=/var/tmp/deb state=directory
+
+- name: Clean the directory of existing .deb packages
+  shell: rm -f *.deb chdir=/var/tmp/deb
+
+- name: Download GitLab Deb package in /var/tmp/deb
+  get_url: url={{ gitlab_deb_url }} dest=/var/tmp/deb
+
+- name: Install GitLab Deb Package
+  apt: deb=/var/tmp/deb/gitlab_7.7.2-omnibus.5.4.2.ci-1_amd64.deb
+
+- name: Configure GitLab
+  shell: gitlab-ctl reconfigure

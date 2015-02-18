@@ -19,7 +19,7 @@
   shell: rm -f *.rpm chdir=/var/tmp/rpms
 
 - name: Download GitLab RPM in /var/tmp/rpms
-  get_url: url={{ gitlab_url }} dest=/var/tmp/rpms
+  get_url: url={{ gitlab_rpm_url }} dest=/var/tmp/rpms
 
 - name: Install gitlab RPM
   shell: yum -y install *.rpm chdir=/var/tmp/rpms
